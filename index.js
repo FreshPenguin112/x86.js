@@ -2,7 +2,7 @@ const fs = require('fs');
 
 // Basic RISC-V Emulator
 function createRiscVEmulator() {
-    const memory = new Uint8Array(1024 * 1024); // 1MB memory
+    const memory = new Uint8Array(100 * 1024 * 1024); // 1MB memory
     const registers = new Uint32Array(32); // 32 general-purpose registers
     let pc = 0; // Program counter
 
@@ -26,7 +26,7 @@ function createRiscVEmulator() {
             const rs1 = (instruction >> 15) & 0x1F;
             const rs2 = (instruction >> 20) & 0x1F;
             const imm = (instruction >> 25) & 0x7F;
-
+            console.log(opcode)
             switch (opcode) {
                 case 0x03: // LOAD
                     registers[rd] = memory[registers[rs1] + imm];
@@ -57,7 +57,7 @@ function createRiscVEmulator() {
                     break;
                 default:
                     console.error(`Unknown opcode: ${opcode}`);
-                    return;
+                    //return;
             }
 
             pc += 4; // Move to the next instruction
