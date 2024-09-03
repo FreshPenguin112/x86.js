@@ -1,31 +1,55 @@
-// main.js
 const fs = require('fs');
 const path = require('path');
+const Translator = require('./translator');
 const CPU = require('./cpu');
-const decode = require('./decoder');
 
-const cpu = new CPU();
+// Function to process the JavaScript code and execute it
+function processCode(jsCode, debug) {
+    // Translate JavaScript code to machine code
+    const translator = new Translator();
+    const machineCode = translator.translate(jsCode);
 
-const program = process.argv[2] ? fs.readFileSync(path.join(__dirname, process.argv[2])).toString() : `
-    MOV eax, 0x5
-    MOV ebx, 0x3
-    ADD eax, ebx
-    SUB eax, 0x1
-    MUL eax, 0x2
-    MOV [0x300], eax
-    JMP 0x0
-`;
+    // Initialize CPU and load the program
+    const cpu = new CPU();
+    cpu.loadProgram(machineCode);
 
-const instructions = program.split('\n').map(line => line.trim()).filter(line => line);
+    // Execute the program
+    cpu.execute();
 
-function execute(cpu) {
-    while (cpu.ip < instructions.length) {
-        const instruction = instructions[cpu.ip];
-        decode(cpu, instruction);
-        cpu.ip++;
+    // Debug information
+    if (debug === "--debug" || debug === "-d") {
+        console.log("\ndebug info:");
+        console.log("registers: ", JSON.stringify(cpu.registers));
+        console.log("program: ", JSON.stringify(machineCode));
+        console.log("var map: ", JSON.stringify(Object.fromEntries(translator.varMap)));
     }
-    console.log(cpu.registers);
-    console.log(cpu.memory.slice(0, 0x310)); // Print the first 0x310 bytes of memory
 }
 
-execute(cpu);
+// Check if the input is coming from stdin (piped input)
+if (process.stdin.isTTY) {
+    // Get the file path from command-line arguments
+    const [,, programPath, debug] = process.argv;
+
+    if (!programPath) {
+        console.error('Please provide the path to the program file.');
+        process.exit(1);
+    }
+
+    // Read the program file
+    const jsCode = fs.readFileSync(path.resolve(__dirname, programPath), 'utf8');
+    processCode(jsCode, debug);
+
+} else {
+    // If input is piped, read from stdin
+    let jsCode = '';
+
+    process.stdin.on('data', chunk => {
+        jsCode += chunk;
+    });
+
+    process.stdin.on('end', () => {
+        // Get the debug flag from command-line arguments
+        const [,, debug] = process.argv;
+        processCode(jsCode, debug);
+    });
+}
