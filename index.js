@@ -1,6 +1,5 @@
 const fs = require('fs');
-const path = require('path');
-// Define CPU and memory
+
 const MEMORY_SIZE = 10 * 1024 * 1024; // 10 MB
 const memory = Buffer.alloc(MEMORY_SIZE);
 const registers = {
@@ -9,8 +8,8 @@ const registers = {
 };
 
 // ELF Parsing
-function readELF(filename, entrySymbol) {
-    const buffer = fs.readFileSync(path.join(__dirname, filename));
+function readELF(filename) {
+    const buffer = fs.readFileSync(filename);
 
     // ELF Header
     const e_ident = buffer.slice(0, 16);
@@ -23,22 +22,20 @@ function readELF(filename, entrySymbol) {
     const sections = [];
     for (let i = 0; i < e_shnum; i++) {
         const offset = e_shoff + i * e_shentsize;
-        const sh_name = buffer.readUInt32LE(offset);
         const sh_offset = buffer.readUInt32LE(offset + 16);
         const sh_size = buffer.readUInt32LE(offset + 20);
 
-        sections.push({ sh_name, sh_offset, sh_size });
+        sections.push({ sh_offset, sh_size });
     }
 
     // Load sections into memory
-    let entryPoint = e_entry;
     sections.forEach(section => {
         if (section.sh_offset > 0 && section.sh_size > 0) {
             buffer.copy(memory, section.sh_offset, section.sh_offset, section.sh_offset + section.sh_size);
         }
     });
 
-    return { entryPoint };
+    return { entryPoint: e_entry };
 }
 
 // Instruction Decoding
@@ -54,8 +51,10 @@ function decodeInstruction(ip) {
             return ip + 1;
         case 0xC3: // RET
             return registers.rsp;
+        case 0x90: // NOP
+            return ip + 1;
         default:
-            throw new Error(`Unknown opcode ${opcode}`);
+            throw new Error(`Unknown opcode ${opcode.toString(16)} at address ${ip.toString(16)}`);
     }
 }
 
@@ -64,9 +63,14 @@ function execute() {
     let ip = registers.rip;
 
     while (true) {
-        ip = decodeInstruction(ip);
-        if (ip === undefined) break;
-        registers.rip = ip;
+        try {
+            ip = decodeInstruction(ip);
+            if (ip === undefined) break;
+            registers.rip = ip;
+        } catch (err) {
+            console.error(`Error executing instruction at ${registers.rip.toString(16)}: ${err.message}`);
+            break;
+        }
     }
 }
 
@@ -78,10 +82,13 @@ function main() {
     }
 
     const filename = process.argv[2];
-    const { entryPoint } = readELF(filename, 'main');
+    const { entryPoint } = readELF(filename);
 
     registers.rip = entryPoint;
     execute();
+
+    console.log('Execution completed.');
+    console.log('Registers:', registers);
 }
 
 main();
