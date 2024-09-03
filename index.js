@@ -50,9 +50,17 @@ function decodeInstruction(ip) {
         case 0x48: // REX prefix
             return ip + 1;
         case 0xC3: // RET
-            return registers.rsp;
+            const retAddress = memory.readUInt32LE(registers.rsp);
+            registers.rsp += 8;
+            return retAddress;
         case 0x90: // NOP
             return ip + 1;
+        case 0x01: // ADD r/m32, r32
+            // For simplicity, handle a specific example
+            const reg1 = (memory[ip + 1] & 0xF8) >> 3;
+            const reg2 = (memory[ip + 1] & 0x07);
+            registers[`r${reg1}`] += registers[`r${reg2}`];
+            return ip + 2;
         default:
             throw new Error(`Unknown opcode ${opcode.toString(16)} at address ${ip.toString(16)}`);
     }
@@ -65,7 +73,7 @@ function execute() {
     while (true) {
         try {
             ip = decodeInstruction(ip);
-            if (ip === undefined) break;
+            if (ip === undefined || ip >= MEMORY_SIZE) break;
             registers.rip = ip;
         } catch (err) {
             console.error(`Error executing instruction at ${registers.rip.toString(16)}: ${err.message}`);
