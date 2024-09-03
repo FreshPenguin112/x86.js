@@ -1,5 +1,5 @@
 const fs = require('fs');
-
+const path = require('path');
 // Define CPU and memory
 const MEMORY_SIZE = 10 * 1024 * 1024; // 10 MB
 const memory = Buffer.alloc(MEMORY_SIZE);
@@ -10,7 +10,7 @@ const registers = {
 
 // ELF Parsing
 function readELF(filename, entrySymbol) {
-    const buffer = fs.readFileSync(filename);
+    const buffer = fs.readFileSync(path.join(__dirname, filename));
 
     // ELF Header
     const e_ident = buffer.slice(0, 16);
@@ -55,7 +55,7 @@ function decodeInstruction(ip) {
         case 0xC3: // RET
             return registers.rsp;
         default:
-            throw new Error(`Unknown opcode ${opcode.toString(16)}`);
+            throw new Error(`Unknown opcode ${opcode}`);
     }
 }
 
