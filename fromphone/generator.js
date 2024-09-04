@@ -10,7 +10,7 @@ const opcodes = {
     'subtract': 0x03,
     'multiply': 0x04,
     'divide': 0x05,
-    'exponentiate': 0x06,
+    'exponent': 0x06,
     'halt': 0x07,
     'print': 0x08,
 };

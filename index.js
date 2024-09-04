@@ -55,7 +55,7 @@ function decodeInstruction(ip) {
             return retAddress;
         case 0x90: // NOP
             return ip + 1;
-        case 0x01: // ADD r/m32, r32
+        case 0x01: // add r/m32, r32
             // For simplicity, handle a specific example
             const reg1 = (memory[ip + 1] & 0xF8) >> 3;
             const reg2 = (memory[ip + 1] & 0x07);

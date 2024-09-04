@@ -14,27 +14,27 @@ class CPU {
         while (this.pc < this.memory.length) {
             const instruction = this.memory[this.pc++];
             switch (instruction) {
-                case 0x01: // LOAD constant into register
+                case 0x01: // load constant into register
                     const reg = this.memory[this.pc++];
                     const value = this.memory[this.pc++];
                     this.setRegister(reg, value);
                     break;
-                case 0x02: // ADD (using bitwise operations)
+                case 0x02: // add (using bitwise operations)
                     const reg1 = this.memory[this.pc++];
                     const reg2 = this.memory[this.pc++];
                     this.setRegister(reg1, this.add(this.getRegister(reg1), this.getRegister(reg2)));
                     break;
-                case 0x03: // SUBTRACT (using bitwise operations)
+                case 0x03: // subtract (using bitwise operations)
                     const reg3 = this.memory[this.pc++];
                     const reg4 = this.memory[this.pc++];
                     this.setRegister(reg3, this.subtract(this.getRegister(reg3), this.getRegister(reg4)));
                     break;
-                case 0x04: // MULTIPLY (using bitwise operations)
+                case 0x04: // multiply (using bitwise operations)
                     const reg5 = this.memory[this.pc++];
                     const reg6 = this.memory[this.pc++];
                     this.setRegister(reg5, this.multiply(this.getRegister(reg5), this.getRegister(reg6)));
                     break;
-                case 0x05: // DIVIDE (using bitwise operations)
+                case 0x05: // divide (using bitwise operations)
                     const reg7 = this.memory[this.pc++];
                     const reg8 = this.memory[this.pc++];
                     this.setRegister(reg7, this.divide(this.getRegister(reg7), this.getRegister(reg8)));
@@ -44,13 +44,13 @@ class CPU {
                     const reg10 = this.memory[this.pc++];
                     this.setRegister(reg9, this.exponent(this.getRegister(reg9), this.getRegister(reg10)));
                     break;
-                case 0x07: // HALT
+                case 0x07: // halt
                     return;
-                case 0x08: // PRINT
+                case 0x08: // print
                     const regToPrint = this.memory[this.pc++];
                     console.log(this.getRegister(regToPrint));
                     break;
-                case 0x09: // LOAD variable into register
+                case 0x09: // load variable into register
                     const varReg = this.memory[this.pc++];
                     const loadReg = this.memory[this.pc++];
                     this.setRegister(loadReg, this.getRegister(varReg));

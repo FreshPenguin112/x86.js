@@ -1,14 +1,14 @@
 // disassembler.js
 
 const opcodes = {
-    0x01: 'LOAD',        // Load a value into a register
-    0x02: 'ADD',         // Add values of two registers
-    0x03: 'SUBTRACT',    // Subtract values of two registers
-    0x04: 'MULTIPLY',    // Multiply values of two registers
-    0x05: 'DIVIDE',      // Divide values of two registers
-    0x06: 'EXPONENTIATE',// Raise value in a register to the power of another register
-    0x07: 'HALT',        // Stop execution
-    0x08: 'PRINT',       // Output the value of a register
+    0x01: 'load',        // Load a value into a register
+    0x02: 'add',         // Add values of two registers
+    0x03: 'subtract',    // Subtract values of two registers
+    0x04: 'multiply',    // Multiply values of two registers
+    0x05: 'divide',      // Divide values of two registers
+    0x06: 'exponent',// Raise value in a register to the power of another register
+    0x07: 'halt',        // Stop execution
+    0x08: 'print',       // Output the value of a register
 };
 
 function disassemble(program) {
@@ -20,13 +20,13 @@ function disassemble(program) {
             let args = [];
 
             // Handle arguments if there are any
-            if (instruction === 'LOAD' || instruction === 'ADD' || instruction === 'SUBTRACT' ||
-                instruction === 'MULTIPLY' || instruction === 'DIVIDE' || instruction === 'EXPONENTIATE' ||
-                instruction === 'PRINT') {
+            if (instruction === 'load' || instruction === 'add' || instruction === 'subtract' ||
+                instruction === 'multiply' || instruction === 'divide' || instruction === 'exponent' ||
+                instruction === 'print') {
 
                 // Collect arguments
                 args.push(program[++i]); // Register or Value
-                if (instruction !== 'PRINT') {
+                if (instruction !== 'print') {
                     args.push(program[++i]); // Register or Value
                 }
             }
@@ -34,28 +34,28 @@ function disassemble(program) {
             // Create descriptive messages
             let message;
             switch (instruction) {
-                case 'LOAD':
+                case 'load':
                     message = `Load the value ${args[1]} into register ${args[0]}.`;
                     break;
-                case 'ADD':
+                case 'add':
                     message = `Add the value in register ${args[1]} to the value in register ${args[0]} and store the result in register ${args[0]}.`;
                     break;
-                case 'SUBTRACT':
+                case 'subtract':
                     message = `Subtract the value in register ${args[1]} from the value in register ${args[0]} and store the result in register ${args[0]}.`;
                     break;
-                case 'MULTIPLY':
+                case 'multiply':
                     message = `Multiply the value in register ${args[1]} by the value in register ${args[0]} and store the result in register ${args[0]}.`;
                     break;
-                case 'DIVIDE':
+                case 'divide':
                     message = `Divide the value in register ${args[0]} by the value in register ${args[1]} and store the result in register ${args[0]}.`;
                     break;
-                case 'EXPONENTIATE':
+                case 'exponent':
                     message = `Raise the value in register ${args[0]} to the power of the value in register ${args[1]} and store the result in register ${args[0]}.`;
                     break;
-                case 'PRINT':
+                case 'print':
                     message = `Print the value in register ${args[0]}.`;
                     break;
-                case 'HALT':
+                case 'halt':
                     message = `End of program.`;
                     break;
                 default:

@@ -12,7 +12,7 @@ class Translator {
             this.parseLine(line);
         });
 
-        // Add HALT at the end of the program
+        // Add halt at the end of the program
         this.program.push(0x07);
 
         return this.program;
@@ -125,10 +125,10 @@ class Translator {
                 const rightRegister = evalStack.pop();
                 const leftRegister = evalStack.pop();
                 let instruction = null;
-                if (token === '+') instruction = 0x02; // ADD
-                else if (token === '-') instruction = 0x03; // SUBTRACT
-                else if (token === '*') instruction = 0x04; // MULTIPLY
-                else if (token === '/') instruction = 0x05; // DIVIDE
+                if (token === '+') instruction = 0x02; // add
+                else if (token === '-') instruction = 0x03; // subtract
+                else if (token === '*') instruction = 0x04; // multiply
+                else if (token === '/') instruction = 0x05; // divide
                 else if (token === '**' || token === '^') instruction = 0x06; // EXPONENT
 
                 if (instruction) {
@@ -156,7 +156,7 @@ class Translator {
             const variable = match[1].trim(); // Trim any surrounding whitespace
             if (this.varMap.has(variable)) {
                 const register = this.varMap.get(variable);
-                this.program.push(0x08, register); // PRINT instruction
+                this.program.push(0x08, register); // print instruction
             } else {
                 throw new Error(`Undefined variable: ${variable}`);
             }
